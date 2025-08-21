@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reporte A1.3 – Regresión lineal múltiple</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f8f9fa; color: #333; }
+    h1, h2 { color: #274f6e; }
+    pre { background: #eee; padding: 12px; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Reporte A1.3 – Regresión lineal múltiple (NASA)</h1>
+  <p>Este reporte muestra el flujo de trabajo para entrenar un modelo de regresión lineal múltiple con el dataset de la NASA.</p>
+
+  <h2>1) Importación y exploración</h2>
+  <pre><code>import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+
+df = pd.read_csv("A1.3 NASA.csv")
+print("Dimensiones:", df.shape)
+print(df.head(15))</code></pre>
+
+  <h2>2) Partición de datos 70/30</h2>
+  <pre><code>np.random.seed(42)
+msk = np.random.rand(len(df)) < 0.7
+
+X = df[["frecuencia","angulo","longitud","velocidad","espesor"]].values
+y = df["presion"].values
+
+X_train, X_test = X[msk], X[~msk]
+y_train, y_test = y[msk], y[~msk]
+
+print(X_train.shape, y_train.shape)
+print(X_test.shape, y_test.shape)</code></pre>
+
+  <h2>3) Entrenamiento del modelo</h2>
+  <pre><code>X_train_const = sm.add_constant(X_train)
+X_test_const  = sm.add_constant(X_test)
+
+model = sm.OLS(y_train, X_train_const).fit()
+print(model.summary())
+print(model.pvalues)</code></pre>
+
+  <h2>4) Variables significativas</h2>
+  <pre><code>alpha = 0.05
+pvals = pd.Series(model.pvalues, index=["const","frecuencia","angulo","longitud","velocidad","espesor"])
+print(pvals[pvals < alpha])</code></pre>
+
+  <h2>5) Métricas</h2>
+  <pre><code>y_pred_train = model.predict(X_train_const)
+y_pred_test  = model.predict(X_test_const)
+
+# R²
+from sklearn.metrics import r2_score, mean_squared_error
+print("R² train:", r2_score(y_train, y_pred_train))
+print("R² test :", r2_score(y_test, y_pred_test))
+
+# RSE
+print("RSE train:", np.sqrt(mean_squared_error(y_train, y_pred_train)))
+print("RSE test :", np.sqrt(mean_squared_error(y_test, y_pred_test)))</code></pre>
+
+  <h2>6) Visualización</h2>
+  <pre><code>plt.scatter(y_test, y_pred_test, alpha=0.6)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+plt.xlabel("Valores reales")
+plt.ylabel("Valores predichos")
+plt.title("Validación: Real vs Predicho")
+plt.show()</code></pre>
+
+</body>
+</html>

@@ -3,7 +3,7 @@
 ## Índice
 1. [Dataset](./A1.3%20NASA.csv)
 2. [Notebook](./A1.3%20Regresión%20lineal%20múltiple.ipynb)
-3. [Reporte HTML](./A1.3RegresionLinealMultiple.html)
+3. [Reporte HTML](./A1.3%20Regresión%20lineal%20múltiple.html)
 4. [README](./README.md)
 
 ---
